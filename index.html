@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Picasse — Signal Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --blue: #4d65ff;
+    --blue-light: #e8ebff;
+    --blue-mid: #a3b0ff;
+    --blue-dark: #3a4ecc;
+    --green: #22c55e;
+    --green-light: #e7faf0;
+    --amber: #f59e0b;
+    --amber-light: #fef6e0;
+    --red: #ef4444;
+    --red-light: #fde8e8;
+    --charcoal: #1a1a2e;
+    --slate: #64748b;
+    --slate-light: #94a3b8;
+    --border: #e2e8f0;
+    --bg: #f8f9fc;
+    --card: #ffffff;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 3px rgba(26, 26, 46, 0.04), 0 1px 2px rgba(26, 26, 46, 0.06);
+    --shadow-md: 0 4px 16px rgba(26, 26, 46, 0.06), 0 2px 4px rgba(26, 26, 46, 0.04);
+    --shadow-lg: 0 12px 40px rgba(77, 101, 255, 0.08), 0 4px 12px rgba(26, 26, 46, 0.04);
+    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--charcoal);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .header-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--blue);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.5px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brand-mark::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  }
+
+  .brand-name {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--charcoal);
+  }
+
+  .brand-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .brand-sub {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--slate);
+    letter-spacing: 0.01em;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 2px 8px rgba(77, 101, 255, 0.25);
+  }
+
+  .btn-primary:hover {
+    background: var(--blue-dark);
+    box-shadow: 0 4px 16px rgba(77, 101, 255, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--slate);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--blue-mid);
+    color: var(--blue);
+    background: var(--blue-light);
+  }
+
+  .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ── Main Container ── */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── Import Zone ── */
+  .import-section {
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    text-align: center;
+    background: var(--card);
+    transition: all var(--transition);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .drop-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--blue-light) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--blue);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .drop-zone:hover::before, .drop-zone.drag-over::before {
+    opacity: 1;
+  }
+
+  .drop-zone-content { position: relative; z-index: 1; }
+
+  .drop-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    background: var(--blue-light);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    transition: transform var(--transition);
+  }
+
+  .drop-zone:hover .drop-icon { transform: translateY(-3px); }
+
+  .drop-icon svg { width: 24px; height: 24px; }
+
+  .drop-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--charcoal);
+  }
+
+  .drop-sub {
+    font-size: 13px;
+    color: var(--slate);
+    margin-bottom: 16px;
+  }
+
+  .format-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--slate-light);
+    background: var(--bg);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .drop-zone input[type="file"] { display: none; }
+
+  .import-feedback {
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .import-feedback.success {
+    display: inline-flex;
+    background: var(--green-light);
+    color: #16a34a;
+  }
+
+  .import-feedback.error {
+    display: inline-flex;
+    background: var(--red-light);
+    color: var(--red);
+  }
+
+  /* ── Stats Row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: all var(--transition);
+  }
+
+  .stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .stat-dot.loc { background: var(--blue); }
+  .stat-dot.bt { background: #6366f1; }
+  .stat-dot.wifi { background: var(--green); }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--charcoal);
+    line-height: 1.1;
+  }
+
+  /* ── Search ── */
+  .search-bar {
+    margin-bottom: 20px;
+    position: relative;
+    animation: fadeUp 0.5s ease 0.15s both;
+  }
+
+  .search-bar svg {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--slate-light);
+    pointer-events: none;
+    transition: color var(--transition);
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 13px 16px 13px 44px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    color: var(--charcoal);
+    outline: none;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .search-input::placeholder { color: var(--slate-light); }
+
+  .search-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-light), var(--shadow-sm);
+  }
+
+  .search-input:focus + svg { color: var(--blue); }
+
+  /* ── Location Cards ── */
+  .locations {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeUp 0.5s ease 0.2s both;
+  }
+
+  .location-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition);
+  }
+
+  .location-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .location-card.expanded {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--blue-mid);
+  }
+
+  .location-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+
+  .location-header:hover {
+    background: var(--bg);
+  }
+
+  .location-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .location-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--blue-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .location-icon svg { width: 20px; height: 20px; }
+
+  .location-name {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--charcoal);
+  }
+
+  .location-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 3px;
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+
+  .meta-badge.bt {
+    background: #eef2ff;
+    color: #6366f1;
+  }
+
+  .meta-badge.wifi {
+    background: var(--green-light);
+    color: #16a34a;
+  }
+
+  .meta-badge svg { width: 12px; height: 12px; }
+
+  .expand-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--slate-light);
+    transition: all var(--transition);
+    flex-shrink: 0;
+  }
+
+  .expand-arrow svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .location-card.expanded .expand-arrow svg {
+    transform: rotate(180deg);
+  }
+
+  .location-card.expanded .expand-arrow {
+    color: var(--blue);
+    background: var(--blue-light);
+  }
+
+  /* ── Signal Table ── */
+  .location-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .location-card.expanded .location-body {
+    max-height: 600px;
+  }
+
+  .signal-table-wrap {
+    padding: 0 24px 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .signal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .signal-table th {
+    text-align: left;
+    padding: 12px 12px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--slate-light);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .signal-table td {
+    padding: 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .signal-table tr:last-child td { border-bottom: none; }
+
+  .signal-table tr {
+    transition: background var(--transition);
+  }
+
+  .signal-table tbody tr:hover {
+    background: var(--bg);
+  }
+
+  .type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .type-chip.ibeacon {
+    background: #eef2ff;
+    color: #6366f1;
+  }
+
+  .type-chip.wifi {
+    background: var(--green-light);
+    color: #16a34a;
+  }
+
+  .type-chip svg { width: 12px; height: 12px; }
+
+  .id-cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--slate);
+    word-break: break-all;
+  }
+
+  .name-cell {
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--slate);
+  }
+
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    color: var(--border);
+    margin-bottom: 16px;
+  }
+
+  .empty-state p {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .empty-state span {
+    font-size: 13px;
+    color: var(--slate-light);
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .location-card {
+    animation: cardIn 0.35s ease both;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .header-inner { height: 56px; }
+    .brand-sep, .brand-sub { display: none; }
+    .container { padding: 20px 16px 60px; }
+    .drop-zone { padding: 28px 20px; }
+    .location-header { padding: 16px; }
+    .signal-table-wrap { padding: 0 16px 16px; overflow-x: auto; }
+    .signal-table { min-width: 500px; }
+    .stat-value { font-size: 26px; }
+    .header-actions .btn span.btn-label { display: none; }
+  }
+
+  /* ── Subtle noise texture ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+    z-index: 9999;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">P</div>
+      <div class="brand-name">Picasse</div>
+      <div class="brand-sep"></div>
+      <div class="brand-sub">Signal Inventory</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" onclick="exportData()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
+        <span class="btn-label">Export</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<div class="container">
+
+  <!-- Import Zone -->
+  <section class="import-section">
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-content">
+        <div class="drop-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+        </div>
+        <div class="drop-title">Import signal data</div>
+        <div class="drop-sub">Drop a CSV or JSON file here, or click to browse</div>
+        <div class="format-hint">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          CSV: location_name, type, identifier, name
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".csv,.json">
+    </div>
+    <div class="import-feedback" id="importFeedback"></div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label"><span class="stat-dot loc"></span> Locations</div>
+      <div class="stat-value" id="statLocations">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span class="stat-dot bt"></span> iBeacons</div>
+      <div class="stat-value" id="statBeacons">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><span class="stat-dot wifi"></span> WiFi APs</div>
+      <div class="stat-value" id="statWifi">0</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search locations, identifiers, or signal names…">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+  </div>
+
+  <!-- Location Cards -->
+  <div class="locations" id="locations"></div>
+</div>
+
+<script>
+// ── SVG Icons ──
+const icons = {
+  bluetooth: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>`,
+  wifi: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`,
+  location: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>`,
+  chevron: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>`
+};
+
+// ── Sample Data ──
+let signalData = [];
+
+// ── Helpers ──
+function groupByLocation(data) {
+  const map = {};
+  data.forEach(d => {
+    if (!map[d.location_name]) map[d.location_name] = [];
+    map[d.location_name].push(d);
+  });
+  return map;
+}
+
+// ── Render ──
+function render(filter = '') {
+  const filtered = filter
+    ? signalData.filter(d =>
+        d.location_name.toLowerCase().includes(filter) ||
+        d.identifier.toLowerCase().includes(filter) ||
+        d.name.toLowerCase().includes(filter)
+      )
+    : signalData;
+
+  const grouped = groupByLocation(filtered);
+  const locationNames = Object.keys(grouped);
+  const totalBeacons = filtered.filter(d => d.type === 'ibeacon').length;
+  const totalWifi = filtered.filter(d => d.type === 'wifi').length;
+
+  document.getElementById('statLocations').textContent = locationNames.length;
+  document.getElementById('statBeacons').textContent = totalBeacons;
+  document.getElementById('statWifi').textContent = totalWifi;
+
+  const container = document.getElementById('locations');
+
+  if (locationNames.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+        <p>No signals found</p>
+        <span>${filter ? 'Try a different search term' : 'Import a CSV or JSON file to get started'}</span>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = locationNames.map((loc, i) => {
+    const signals = grouped[loc];
+    const beacons = signals.filter(s => s.type === 'ibeacon');
+    const wifis = signals.filter(s => s.type === 'wifi');
+
+    const rows = signals.map(s => `
+      <tr>
+        <td>
+          <span class="type-chip ${s.type === 'ibeacon' ? 'ibeacon' : 'wifi'}">
+            ${s.type === 'ibeacon' ? icons.bluetooth : icons.wifi}
+            ${s.type === 'ibeacon' ? 'Beacon' : 'WiFi'}
+          </span>
+        </td>
+        <td class="name-cell">${s.name}</td>
+        <td class="id-cell">${s.identifier}</td>
+      </tr>`).join('');
+
+    return `
+      <div class="location-card" style="animation-delay: ${i * 0.06}s" data-location="${loc}">
+        <div class="location-header" onclick="toggleCard(this)">
+          <div class="location-info">
+            <div class="location-icon">${icons.location}</div>
+            <div>
+              <div class="location-name">${loc}</div>
+              <div class="location-meta">
+                ${beacons.length ? `<span class="meta-badge bt">${icons.bluetooth} ${beacons.length} beacon${beacons.length !== 1 ? 's' : ''}</span>` : ''}
+                ${wifis.length ? `<span class="meta-badge wifi">${icons.wifi} ${wifis.length} WiFi AP${wifis.length !== 1 ? 's' : ''}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="expand-arrow">${icons.chevron}</div>
+        </div>
+        <div class="location-body">
+          <div class="signal-table-wrap">
+            <table class="signal-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Identifier</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleCard(header) {
+  const card = header.closest('.location-card');
+  card.classList.toggle('expanded');
+}
+
+// ── Search ──
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  render(e.target.value.toLowerCase().trim());
+});
+
+// ── File Import ──
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('drag-over');
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+});
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+});
+
+function processFile(file) {
+  const feedback = document.getElementById('importFeedback');
+  feedback.className = 'import-feedback';
+  feedback.style.display = 'none';
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const text = e.target.result.trim();
+      let parsed;
+
+      if (file.name.endsWith('.json') || text.startsWith('[')) {
+        parsed = JSON.parse(text);
+      } else {
+        parsed = parseCSV(text);
+      }
+
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error('No valid entries found');
+      }
+
+      // Validate structure
+      const required = ['location_name', 'type', 'identifier', 'name'];
+      const first = parsed[0];
+      const missing = required.filter(k => !(k in first));
+      if (missing.length) {
+        throw new Error(`Missing columns: ${missing.join(', ')}`);
+      }
+
+      // Normalize
+      parsed.forEach(d => {
+        d.type = d.type.toLowerCase().trim();
+      });
+
+      signalData = parsed;
+      render(document.getElementById('searchInput').value.toLowerCase().trim());
+
+      feedback.className = 'import-feedback success';
+      feedback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> Imported ${parsed.length} entries from ${file.name}`;
+    } catch (err) {
+      feedback.className = 'import-feedback error';
+      feedback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg> ${err.message}`;
+    }
+  };
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) return [];
+
+  const headers = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
+  const data = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCSVLine(lines[i]);
+    if (values.length !== headers.length) continue;
+    const obj = {};
+    headers.forEach((h, j) => {
+      obj[h] = values[j].replace(/^"|"$/g, '').trim();
+    });
+    data.push(obj);
+  }
+  return data;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+// ── Export (mock) ──
+function exportData() {
+  const json = JSON.stringify(signalData, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'signal-inventory.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Init ──
+render();
+</script>
+</body>
+</html>

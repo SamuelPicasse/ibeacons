@@ -1,0 +1,17 @@
+location_name,type,identifier,name
+"Hoofdkantoor - Receptie",ibeacon,FDA50693-A4E2-4FB1-AFCF-C6EB07647825/1/1,Balie Beacon
+"Hoofdkantoor - Receptie",ibeacon,FDA50693-A4E2-4FB1-AFCF-C6EB07647825/1/2,Ingang Beacon
+"Hoofdkantoor - Receptie",wifi,AA:BB:CC:DD:EE:01,Picasse-Gasten
+"Hoofdkantoor - Receptie",wifi,AA:BB:CC:DD:EE:02,Picasse-Intern
+"Hoofdkantoor - Vergaderzaal 1",ibeacon,B9407F30-F5F8-466E-AFF9-25556B57FE6D/2/1,Vergaderzaal Beacon
+"Hoofdkantoor - Vergaderzaal 1",wifi,11:22:33:44:55:01,Picasse-Intern
+"Hoofdkantoor - Serverruimte",wifi,11:22:33:44:55:02,Infra-Core
+"Hoofdkantoor - Serverruimte",wifi,11:22:33:44:55:03,Infra-Backup
+"Hoofdkantoor - Serverruimte",ibeacon,B9407F30-F5F8-466E-AFF9-25556B57FE6D/3/1,Server Rack Beacon
+"Parkeergarage P1",ibeacon,D57092AC-DFAA-446C-8EF3-C81AA22815B5/1/1,Slagboom Beacon
+"Parkeergarage P1",wifi,FF:EE:DD:CC:BB:01,ParkNet-Bezoekers
+"Magazijn - Begane Grond",ibeacon,E2C56DB5-DFFB-48D2-B060-D0F5A71096E0/5/1,Ingang Magazijn
+"Magazijn - Begane Grond",ibeacon,E2C56DB5-DFFB-48D2-B060-D0F5A71096E0/5/2,Laadperron Beacon
+"Magazijn - Begane Grond",wifi,CC:DD:EE:FF:00:01,Magazijn-WiFi
+"Kantine - Verdieping 2",ibeacon,A1B2C3D4-E5F6-7890-ABCD-EF1234567890/1/1,Kantine Beacon
+"Kantine - Verdieping 2",wifi,DD:EE:FF:00:11:01,Picasse-Gasten
